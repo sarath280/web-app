@@ -3,55 +3,42 @@ import json
 import urllib.request
 import h5py
 import numpy as np
-import json
-import matplotlib.pyplot as plt
 import pickle
 
 import keras 
-from keras.models import Sequential,load_model
+from keras.models import Sequential,load_model,model_from_json
 from keras.applications.vgg16 import VGG16
-from keras.applications.imagenet_utils import preprocess_input,decode_predictions   #?
+from keras.applications.imagenet_utils import preprocess_input
 from keras.preprocessing.image import ImageDataGenerator,array_to_img,img_to_array,load_img
 from keras.utils.data_utils import get_file
 
-<<<<<<< HEAD
-from azure.storage.blob import BlockBlobService
-container_name = 'akash'
+# from azure.storage.blob import BlockBlobService
+# container_name = 'akash'
 
-block_blob_service = BlockBlobService(account_name='code', account_key='JkBDjAZRJJSHibDT10kS1JlVo9fMsnhua1qF0lXoNmn4n1DRHrtVUqCng3HDIv4IJPhuMGOPLy5zdIsDCdSydw==')
+# block_blob_service = BlockBlobService(account_name='code', account_key='JkBDjAZRJJSHibDT10kS1JlVo9fMsnhua1qF0lXoNmn4n1DRHrtVUqCng3HDIv4IJPhuMGOPLy5zdIsDCdSydw==')
+
+location = './static/models/'
 
 # Load models and support
 first_gate = VGG16(weights='imagenet')
 
-if os.path.exists('ft_model_second_gate.h5'):
-	pass
-else:
-	block_blob_service.get_blob_to_path(container_name,'ft_model_second_gate.h5','ft_model_second_gate.h5')
-second_gate = load_model('ft_model_second_gate.h5')
+with open(location+'second_gate_model_json.json','r') as f:
+    second_gate_json = f.read()
+second_gate = model_from_json(second_gate_json)
+second_gate.load_weights(location+'second_gate_model_weights.h5')
 
-if os.path.exists('ft_model_location.h5'):
-	pass
-else:
-	block_blob_service.get_blob_to_path(container_name,'ft_model_location.h5','ft_model_location.h5')
-location_model = load_model('ft_model_location.h5')
+with open(location+'location_model_json.json','r') as f:
+    location_model_json = f.read()
+location_model = model_from_json(location_model_json)
+location_model.load_weights(location+'location_model_weights.h5')
 
-if os.path.exists('ft_model_severity.h5'):
-	pass
-else:
-	block_blob_service.get_blob_to_path(container_name,'ft_model_severity.h5','ft_model_severity.h5')
-severity_model = load_model('ft_model_severity.h5')
-=======
-# Load models and support
-first_gate = VGG16(weights='imagenet')
+with open(location+'severity_model_json.json','r') as f:
+    severity_model_json = f.read()
+severity_model = model_from_json(severity_model_json)
+severity_model.load_weights(location+'severity_model_weights.h5')
 
-second_gate = load_model('./static/models/ft_model_second_gate.h5')
 
-location_model = load_model('./static/models/ft_model_location.h5')
-
-severity_model = load_model('./static/models/ft_model_severity.h5')
->>>>>>> 1d2c9d2c20e918ec6b7cdc624189f3db48318411
-
-with open('./static/models/vgg16_cat_list.pk','rb') as f:
+with open(location+'vgg16_cat_list.pk','rb') as f:
     cat_list = pickle.load(f)
 
 print('cat-list loaded')
