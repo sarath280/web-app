@@ -33,18 +33,28 @@ def allowed_file(filename):
 def home():
 	return render_template('index.html', result=None)
 
+@app.route('/<a>')
+def available(a):
+	flash('{} coming soon!'.format(a))
+	return render_template('index.html', result=None, scroll='third')
+
 @app.route('/assessment')
 def assess():
-	return render_template('index.html', result=None)
+	return render_template('index.html', result=None, scroll='third')
+
 
 @app.route('/assessment', methods=['GET', 'POST'])
 def upload_and_classify():
 	if request.method == 'POST':
+		# check if the post request has the file part
 		if 'file' not in request.files:
 			flash('No file part')
 			return redirect(url_for('assess'))
-
+		
 		file = request.files['file']
+
+		# if user does not select file, browser also
+		# submit a empty part without filename
 		if file.filename == '':
 			flash('No selected file')
 			return redirect(url_for('assess'))
@@ -52,22 +62,33 @@ def upload_and_classify():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename) # used to secure a filename before storing it directly on the filesystem
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			# return redirect(url_for('uploaded_file',
+			#                         filename=filename))
 			filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 			model_results = engine.engine(filepath)
 
-			return render_template('results.html', result=model_results, filename=filename)
+			return render_template('results.html', result=model_results, scroll='third', filename=filename)
 	
 	flash('Invalid file format - please try your upload again.')
 	return redirect(url_for('assess'))
 
+# @app.route('/show/<filename>')
+# def uploaded_file(filename):
+#     return render_template('template.html', filename=filename)
+
 @app.route('/uploads/<filename>')
 def send_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+# Now one last thing is missing: the serving of the uploaded files. 
+# In the upload_file() we redirect the user to url_for('uploaded_file', filename=filename), 
+# that is, /uploads/filename. So we write the uploaded_file() function to return the file of that name. 
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
 	return send_from_directory(app.config['UPLOAD_FOLDER'],
 							   filename)
 
+
 if __name__ == '__main__':
-	app.run(host='localhost', port=4000, debug=True, use_reloader=False) # remember to set back to False	
+	app.run(host='0.0.0.0', port=8080, debug=True, use_reloader=False) # remember to set back to False	
