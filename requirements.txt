@@ -8,3 +8,4 @@ sklearn
 pillow
 theano
 collections-extended
+gunicorn
