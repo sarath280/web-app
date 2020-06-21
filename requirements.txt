@@ -1,4 +1,10 @@
 Flask
-tensorflow
+tensorflow==1.14
 h5py
-keras
+keras==2.2.5
+numpy 
+pandas 
+sklearn 
+pillow
+theano
+collections-extended
