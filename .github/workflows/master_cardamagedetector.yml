@@ -31,4 +31,4 @@ jobs:
       with:
         app-name: 'cardamagedetector'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_e875cf84dccc488dab00a29c9bd4edde }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_f335977dcf4546cea59ea0428c918ecb }}
